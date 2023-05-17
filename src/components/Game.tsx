@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Platform, SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Colors } from '../styles/colors'
 import { PanGestureHandler } from 'react-native-gesture-handler'
@@ -20,6 +20,13 @@ const Game = ():JSX.Element => {
     const [isPaused, setIsPaused] = useState<boolean>(false)
     const [score, setScore] = useState<number>(0)
 
+   const  onLayout = (e : any) => {
+    if(Platform.OS === "android"){
+
+        console.log(e.nativeEvent.layout)
+    }
+      }
+
     useEffect(() => {
      if(!isGameOver){
         const intervalId = setInterval(() => {
@@ -38,6 +45,12 @@ const Game = ():JSX.Element => {
         // GAME OVER
         if(checkGameOver(snakeHead , GAME_BOUNDS)){
             setIsGameOver((prev) => !prev);
+            Alert.alert(score.toString(), "your Score", [{
+                text: 'OK', onPress: () => {
+                    return;
+                },
+            },
+            ]);
             return;
         }
 
@@ -104,9 +117,9 @@ const Game = ():JSX.Element => {
     <PanGestureHandler onGestureEvent={handleGesture}>
         <SafeAreaView style = {styles.container}>
             <Header isPaused={isPaused} pauseGame={pauseGame} reloadGame={reloadGame}>
-                <Text>{score}</Text>
+                <Text style={{color: Colors.primary}}>{score}</Text>
             </Header>
-            <View style={styles.boundaries}>
+            <View style={styles.boundaries} onLayout={onLayout}>
                 <Snake  snake={snake}/>
                 <Food x={food.x} y={food.y}/>
             </View>
